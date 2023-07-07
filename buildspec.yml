@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 14
+      nodejs: 18
     commands:
       - echo "La variable de entorno es $AWS_CREDENTIALS_ACCESS_KEY"
       - echo "La variable de entorno es $AWS_CREDENTIALS_SECRET_KEY"
