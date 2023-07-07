@@ -11,8 +11,14 @@ Resources:
             Principal:
               Service: 'lambda.amazonaws.com'
             Action: 'sts:AssumeRole'
-    ManagedPolicyArns: # Add this section
-      - 'arn:aws:iam::aws:policy/AdministratorAccess'
+      Policies: 
+        - PolicyName: AdministratorAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
 
   MoviesLambdaFunction:
     Type: 'AWS::Lambda::Function'
