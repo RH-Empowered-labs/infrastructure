@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo '      CONFIG - Initialized variables - folders';
+s3Path=s3
 lambdasPath=lambdas
 dynamodbPath=dynamodb
 apiGetwayPath=apigetway
@@ -9,11 +10,28 @@ secretsmanagerPath=secretsmanager
 
 echo '      CONFIG - Initialized variables - paths';
 # Rutas de los archivos de stacks
+s3Template=$s3Path/movies-s3-template.yaml
 lambdasTemplate=$lambdasPath/movies-lambdas-template.yaml
 dynamodbTemplate=$dynamodbPath/movies-dynamodb-template.yaml
 apiGetwayTemplate=$apiGetwayPath/movies-apigetway-template.yaml
 parameterstoreTemplate=$parameterstorePath/movies-parameterstore-template.yaml
 secretsManagerTemplate=$secretsmanagerPath/movies-secretsmanager-template.yaml
+
+echo '      AWS - Cloudformation create or verify stack - s3';
+
+# Verificar si el stack de s3 existe
+if aws cloudformation describe-stacks --stack-name movies-s3-stack >/dev/null 2>&1; then
+    echo "Stack movies-s3-stack already exists"
+else
+    echo "Stack movies-s3-stack does not exist. Creating..."
+    if aws cloudformation create-stack --stack-name movies-s3-stack --template-body file://$s3Template >/dev/null; then 
+        aws cloudformation wait stack-create-complete --stack-name movies-s3-stack
+    else
+        echo 'Error creating s3 stack. Exiting.'
+        exit 1
+    fi
+fi
+
 
 echo '      AWS - Cloudformation create or verify stack - DynamoDB';
 
