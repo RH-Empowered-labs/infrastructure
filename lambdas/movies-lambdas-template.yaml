@@ -11,17 +11,8 @@ Resources:
             Principal:
               Service: 'lambda.amazonaws.com'
             Action: 'sts:AssumeRole'
-      Policies:
-        - PolicyName: LambdaExecutionPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
+    ManagedPolicyArns: # Add this section
+      - 'arn:aws:iam::aws:policy/AdministratorAccess'
 
   MoviesLambdaFunction:
     Type: 'AWS::Lambda::Function'
