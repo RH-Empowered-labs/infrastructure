@@ -1,9 +1,26 @@
 version: 0.2
 
+env:
+  variables:
+  AWS_DEFAULT_REGION: "us-east-1"
+
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      python: 3.8
     commands:
-      - echo "La variable de entorno es $AWS_CREDENTIALS_ACCESS_KEY"
-      - echo "La variable de entorno es $AWS_CREDENTIALS_SECRET_KEY"
+      - echo Installing AWS CLI...
+      - curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip
+      - sudo ./aws/install
+  pre_build:
+    commands:
+      - echo Configure AWS CLI...
+      - aws configure set aws_access_key_id $AWS_CREDENTIALS_ACCESS_KEY
+      - aws configure set aws_secret_access_key $AWS_CREDENTIALS_SECRET_KEY
+      - aws configure set default.region $AWS_DEFAULT_REGION
+  build:
+    commands:
+      - echo Building the app...
+      - echo Execute AWS CLI commands...
+      - aws s3 ls # como ejemplo, se está listando los buckets de S3, reemplazar por el comando que necesites
