@@ -32,11 +32,17 @@ Resources:
       RestApiId: !Ref MoviesApiGetway
       AuthorizationType: 'NONE'
       Integration:
-        Type: 'AWS_PROXY'
-        IntegrationHttpMethod: 'POST'
-        Uri: 
-          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MoviesLambdaFunction}/invocations'
-        PassthroughBehavior: 'WHEN_NO_MATCH'
+        Type: 'MOCK'
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: '{"message": "Mock integration in effect"}'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
   
   UsersGetMethod:
     Type: 'AWS::ApiGateway::Method'
@@ -46,11 +52,17 @@ Resources:
       RestApiId: !Ref MoviesApiGetway
       AuthorizationType: 'NONE'
       Integration:
-        Type: 'AWS_PROXY'
-        IntegrationHttpMethod: 'POST'
-        Uri: 
-          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersLambdaFunction}/invocations'
-        PassthroughBehavior: 'WHEN_NO_MATCH'
+        Type: 'MOCK'
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: '{"message": "Mock integration in effect"}'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
         
   GatewayDeployment:
     Type: 'AWS::ApiGateway::Deployment'
@@ -78,11 +90,3 @@ Outputs:
         - !Ref "AWS::AccountId"
         - ":"
         - !Ref MoviesApiGetway
-
-Parameters:
-  MoviesLambdaFunction:
-    Type: String
-    Description: ARN of the Movies Lambda Function
-  UsersLambdaFunction:
-    Type: String
-    Description: ARN of the Users Lambda Function

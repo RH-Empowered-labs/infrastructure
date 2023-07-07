@@ -2,7 +2,6 @@
 
 echo '      CONFIG - Initialized variables - folders';
 s3Path=s3
-lambdasPath=lambdas
 dynamodbPath=dynamodb
 apiGetwayPath=apigetway
 parameterstorePath=parameterstore
@@ -11,7 +10,6 @@ secretsmanagerPath=secretsmanager
 echo '      CONFIG - Initialized variables - paths';
 # Rutas de los archivos de stacks
 s3Template=$s3Path/movies-s3-template.yaml
-lambdasTemplate=$lambdasPath/movies-lambdas-template.yaml
 dynamodbTemplate=$dynamodbPath/movies-dynamodb-template.yaml
 apiGetwayTemplate=$apiGetwayPath/movies-apigetway-template.yaml
 parameterstoreTemplate=$parameterstorePath/movies-parameterstore-template.yaml
@@ -64,26 +62,6 @@ else
     fi
 fi
 
-# # Crear y esperar la finalización de la creación del stack de lambdas
-echo '      AWS - Cloudformation create or verify stack - Lambdas';
-
-# Verificar si el stack de Lambdas existe
-if aws cloudformation describe-stacks --stack-name movies-lambdas-stack >/dev/null 2>&1; then
-    echo "Stack movies-lambdas-stack already exists"
-else
-    echo "Stack movies-lambdas-stack does not exist. Creating..."
-    if aws cloudformation create-stack --stack-name movies-lambdas-stack --template-body file://$lambdasTemplate --capabilities CAPABILITY_IAM >/dev/null; then
-        aws cloudformation wait stack-create-complete --stack-name movies-lambdas-stack
-    else
-        echo 'Error creating Lambdas stack. Exiting.'
-        exit 1
-    fi
-fi
-
-echo '      AWS - Cloudformation Get outputs - Lambdas';
-# Obtiene los valores de salida del stack de DynamoDB
-outputLambdas=$(aws cloudformation describe-stacks --stack-name movies-lambdas-stack --query "Stacks[0].Outputs")
-
 echo '      AWS - Cloudformation Get outputs - DynamoDB';
 # Obtiene los valores de salida del stack de DynamoDB
 outputDynamoDb=$(aws cloudformation describe-stacks --stack-name movies-dynamodb-stack --query "Stacks[0].Outputs")
@@ -119,9 +97,6 @@ else
     if aws cloudformation create-stack \
         --stack-name movies-apiGetway-stack \
         --template-body file://$apiGetwayTemplate \
-        --parameters \
-        ParameterKey=MoviesLambdaFunction,ParameterValue=$lambdaMoviesArn \
-        ParameterKey=UsersLambdaFunction,ParameterValue=$lambdaUsersArn \
         >/dev/null; then
         aws cloudformation wait stack-create-complete --stack-name movies-apiGetway-stack
     else
@@ -154,8 +129,6 @@ else
         ParameterKey=MoviesTableName,ParameterValue=$moviesTableName \
         ParameterKey=JwtConfigSecretName,ParameterValue=$jwtConfigSecretARN \
         ParameterKey=RemoteApiConfigSecretName,ParameterValue=$remoteApiConfigSecretARN \
-        ParameterKey=MoviesLambdaFunctionArn,ParameterValue=$lambdaMoviesArn \
-        ParameterKey=UsersLambdaFunctionArn,ParameterValue=$lambdaUsersArn \
         ParameterKey=ApiGatewayArn,ParameterValue=$moviesApiGetwayArn \
         >/dev/null; then
         aws cloudformation wait stack-create-complete --stack-name movies-parameterstore-stack
