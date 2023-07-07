@@ -17,6 +17,18 @@ Parameters:
     Type: String
     Description: The name of the Movies Api Config Secret.
 
+  ApiGatewayArn:
+    Type: String
+    Description: The ARN of the API Gateway.
+
+  MoviesLambdaFunctionArn:
+    Type: String
+    Description: The ARN of the Movies Lambda Function.
+
+  UsersLambdaFunctionArn:
+    Type: String
+    Description: The ARN of the Users Lambda Function.
+
 Resources:
   MoviesTableArnParameter:
     Type: 'AWS::SSM::Parameter'
@@ -45,3 +57,24 @@ Resources:
       Name: '/movies/api/RemoteApiConfigSecretName'
       Type: 'String'
       Value: !Ref RemoteApiConfigSecretName
+
+  ApiGatewayArnParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/api/ApiGatewayArn'
+      Type: 'String'
+      Value: !Ref ApiGatewayArn
+
+  MoviesLambdaFunctionArnParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/lambda/MoviesFunctionArn'
+      Type: 'String'
+      Value: !Ref MoviesLambdaFunctionArn
+
+  UsersLambdaFunctionArnParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/lambda/UsersFunctionArn'
+      Type: 'String'
+      Value: !Ref UsersLambdaFunctionArn

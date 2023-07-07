@@ -1,0 +1,88 @@
+Description: ApiGetway Stack Template
+
+Resources:
+  MoviesApiGetway:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: 'MoviesApiGetway'
+
+  MoviesResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref MoviesApiGetway
+      ParentId: !GetAtt 
+        - MoviesApiGetway
+        - RootResourceId
+      PathPart: 'movies'
+  
+  UsersResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref MoviesApiGetway
+      ParentId: !GetAtt 
+        - MoviesApiGetway
+        - RootResourceId
+      PathPart: 'users'
+  
+  MoviesGetMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: 'GET'
+      ResourceId: !Ref MoviesResource
+      RestApiId: !Ref MoviesApiGetway
+      AuthorizationType: 'NONE'
+      Integration:
+        Type: 'AWS_PROXY'
+        IntegrationHttpMethod: 'POST'
+        Uri: 
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MoviesLambdaFunction}/invocations'
+        PassthroughBehavior: 'WHEN_NO_MATCH'
+  
+  UsersGetMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: 'GET'
+      ResourceId: !Ref UsersResource
+      RestApiId: !Ref MoviesApiGetway
+      AuthorizationType: 'NONE'
+      Integration:
+        Type: 'AWS_PROXY'
+        IntegrationHttpMethod: 'POST'
+        Uri: 
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersLambdaFunction}/invocations'
+        PassthroughBehavior: 'WHEN_NO_MATCH'
+        
+  GatewayDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn: 
+      - MoviesGetMethod
+      - UsersGetMethod
+    Properties:
+      RestApiId: !Ref MoviesApiGetway
+      
+  DevStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      StageName: 'dev'
+      RestApiId: !Ref MoviesApiGetway
+      DeploymentId: !Ref GatewayDeployment
+
+Outputs:
+  MoviesApiGetwayArn:
+    Description: "The ARN of the MoviesApiGetway"
+    Value: !Join
+      - ""
+      - - "arn:aws:execute-api:"
+        - !Ref "AWS::Region"
+        - ":"
+        - !Ref "AWS::AccountId"
+        - ":"
+        - !Ref MoviesApiGetway
+
+Parameters:
+  MoviesLambdaFunction:
+    Type: String
+    Description: ARN of the Movies Lambda Function
+  UsersLambdaFunction:
+    Type: String
+    Description: ARN of the Users Lambda Function
