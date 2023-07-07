@@ -1,0 +1,47 @@
+Description: Parameter Store Stack Template - movies
+
+Parameters:
+  MoviesTableArn:
+    Type: String
+    Description: The ARN of the Movies DynamoDB table.
+
+  MoviesTableName:
+    Type: String
+    Description: The name of the Movies DynamoDB table.
+
+  JwtConfigSecretName:
+    Type: String
+    Description: The name of the Movies Jwt Secret.
+  
+  RemoteApiConfigSecretName:
+    Type: String
+    Description: The name of the Movies Api Config Secret.
+
+Resources:
+  MoviesTableArnParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/movies/dynamodb/MoviesTableArn'
+      Type: 'String'
+      Value: !Ref MoviesTableArn
+
+  MoviesTableNameParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/movies/dynamodb/MoviesTableName'
+      Type: 'String'
+      Value: !Ref MoviesTableName
+
+  JwtConfigSecretNameParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/movies/jwt/JwtConfigSecretName'
+      Type: 'String'
+      Value: !Ref JwtConfigSecretName
+
+  RemoteApiConfigSecretNameParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/movies/api/RemoteApiConfigSecretName'
+      Type: 'String'
+      Value: !Ref RemoteApiConfigSecretName
