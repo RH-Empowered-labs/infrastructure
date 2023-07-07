@@ -17,10 +17,6 @@ Parameters:
     Type: String
     Description: The name of the Movies Api Config Secret.
 
-  ApiGatewayArn:
-    Type: String
-    Description: The ARN of the API Gateway.
-
 Resources:
   MoviesTableArnParameter:
     Type: 'AWS::SSM::Parameter'
@@ -49,10 +45,3 @@ Resources:
       Name: '/movies/api/RemoteApiConfigSecretName'
       Type: 'String'
       Value: !Ref RemoteApiConfigSecretName
-
-  ApiGatewayArnParameter:
-    Type: 'AWS::SSM::Parameter'
-    Properties:
-      Name: '/api/ApiGatewayArn'
-      Type: 'String'
-      Value: !Ref ApiGatewayArn
