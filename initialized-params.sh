@@ -53,12 +53,6 @@ echo '      AWS - Cloudformation Get outputs - Secrets Manager';
 # Obtiene los valores de salida del stack de SecretsManager
 outputSecretsManager=$(aws cloudformation describe-stacks --stack-name movies-secretsmanager-stack --query "Stacks[0].Outputs")
 
-
-echo '      JQ - Map outputs with specific variables - Lambdas';
-# Extrae los valores de MoviesTableArn y MoviesTableName del output de dynamodb
-lambdaMoviesArn=$(echo $outputLambdas | jq -r '.[] | select(.OutputKey=="MoviesLambdaFunctionArn") | .OutputValue')
-lambdaUsersArn=$(echo $outputLambdas | jq -r '.[] | select(.OutputKey=="UsersLambdaFunctionArn") | .OutputValue')
-
 echo '      JQ - Map outputs with specific variables - DynamoDB';
 # Extrae los valores de MoviesTableArn y MoviesTableName del output de dynamodb
 moviesTableArn=$(echo $outputDynamoDb | jq -r '.[] | select(.OutputKey=="MoviesTableArn") | .OutputValue')
@@ -71,7 +65,7 @@ remoteApiConfigSecretARN=$(echo $outputSecretsManager | jq -r '.[] | select(.Out
 
 echo '      AWS - Cloudformation create or verify stack - Parameter Store';
 
-# Crea el stack de Api Getway usando los valores de salida del Stack de Lambdas 
+# Crea el stack de Api Getway usando los valores de salida del Stack de apiGetway
 if aws cloudformation describe-stacks --stack-name movies-apiGetway-stack >/dev/null 2>&1; then
     echo "Stack movies-apiGetway-stack already exists"
 else
@@ -86,9 +80,6 @@ else
         exit 1
     fi
 fi
-# Espera a que se cree el stack de Parameter Store
-aws cloudformation wait stack-create-complete --stack-name movies-apiGetway-stack
-
 
 echo '      AWS - Cloudformation Get outputs - APIGetway';
 # Obtiene los valores de salida del stack de DynamoDB
@@ -96,7 +87,7 @@ outputAPIGetway=$(aws cloudformation describe-stacks --stack-name movies-apiGetw
 
 echo '      JQ - Map outputs with specific variables - APIGetway';
 # Extrae los valores de JwtConfigurationSecretName y RemoteApiConfigurationSecretName del output de secrets manager
-moviesApiGetwayArn=$(echo $outputAPIGetway | jq -r '.[] | select(.OutputKey=="MoviesApiGetwayArn") | .OutputValue')
+moviesApiGetwayId=$(echo $outputAPIGetway | jq -r '.[] | select(.OutputKey=="MoviesApiGetwayId") | .OutputValue')
 
 # Crea el stack de Parameter Store usando los valores de salida de los stacks de DynamoDB y Secret Manager 
 if aws cloudformation describe-stacks --stack-name movies-parameterstore-stack >/dev/null 2>&1; then
